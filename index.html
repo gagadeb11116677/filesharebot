@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sharebot 1.0 - WhatsApp Bot Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 119, 255, 0.3), transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(138, 180, 248, 0.3), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .logo-wrapper {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      position: relative;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .logo {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #667eea;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      position: relative;
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .content-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .group-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+    }
+
+    .group-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(245, 87, 108, 0.4);
+    }
+
+    .group-btn::before {
+      content: '💬';
+      font-size: 20px;
+    }
+
+    .slide {
+      display: none;
+    }
+
+    .slide.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bot-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateX(5px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn::after {
+      content: '→';
+      font-size: 18px;
+      transition: transform 0.3s;
+    }
+
+    .btn:hover::after {
+      transform: translateX(5px);
+    }
+
+    .nav-buttons {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .page-indicator {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 0 10px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .footer-text {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .developer {
+      font-size: 14px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @media (max-width: 480px) {
+      .header-card, .content-card, .footer {
+        padding: 24px 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .stats {
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-card">
+      <div class="logo-wrapper">
+        <div class="logo">
+          <img src="https://img1.pixhost.to/images/9070/645760844_nuxoffc.jpg" alt="Sharebot Logo">
+        </div>
+      </div>
+      <h1>SHAREBOT 1.0</h1>
+      <p class="subtitle">Koleksi script bot WhatsApp terbaik dan terlengkap. Download gratis sesuai kebutuhanmu.</p>
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Bot Scripts</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Free</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <!-- Slide 1 -->
+      <div class="slide active" id="slide1">
+        <a href="https://chat.whatsapp.com/JO8Sd1OnpgqCEVCL7J4Krf?mode=ems_copy_c" target="_blank" class="group-btn">Gabung Grup Info SS/Panel</a>
+        <div class="bot-grid">
+          <a href="https://www.mediafire.com/file/idzvdk3h3h6122n/𝘒𝘢𝘯𝘢𝘥𝘦+𝘠𝘰𝘪𝘴𝘢𝘬𝘪.zip/file" class="btn">1. Kanade-MD</a>
+          <a href="https://www.mediafire.com/file/3nhmze6dw3w94lf/MIKASA_MD_V3.zip/file" class="btn">2. Mikasa-MD</a>
+          <a href="https://www.mediafire.com/file/7810ka7i4zh69o8/elaina%2526vita.zip/file" class="btn">3. Elaina</a>
+          <a href="https://www.mediafire.com/file/l66x6sfjipawx3v/RYO+YAMADA+MD.zip/file" class="btn">4. Yamada</a>
+          <a href="https://www.mediafire.com/file/5c1idge4fvkc4pm/SC_STORE_X_GRUP_BY_RIKI-1.zip/file" class="btn">5. Bot Jaga GB+Store</a>
+          <a href="https://www.mediafire.com/file/miqwz5f55sicj2a/Zion-MD..zip/file?dkey=1gxeflx2jxe&r=217" class="btn">6. Zion-MD</a>
+          <a href="https://www.mediafire.com/file/z241xg6dbtffb8h/sc+pushkontak.zip/file" class="btn">7. Push Kontak V2</a>
+          <a href="https://www.mediafire.com/file/mcklvqahpxox7wm/Furina_x_HuTao%25F0%259F%2598%258D..zip/file" class="btn">8. Furina-MD</a>
+          <a href="https://www.mediafire.com/file/yzuwh02ylr3n68m/Sylis-MD.zip/file" class="btn">9. Stylis-MD</a>
+          <a href="https://www.mediafire.com/file/kz0ef8tcenbzly1/dewi-bot-master.zip/file" class="btn">10. Dewi-Bot-Master</a>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="slide" id="slide2">
+        <a href="https://chat.whatsapp.com/JO8Sd1OnpgqCEVCL7J4Krf?mode=ems_copy_c" target="_blank" class="group-btn">Gabung Grup Info SS/Panel</a>
+        <div class="bot-grid">
+          <a href="https://www.mediafire.com/file/7i1hz84zrbj0u6q/Zenitsu-MD.zip/file" class="btn">11. Zenitsu-MD</a>
+          <a href="https://www.mediafire.com/file/pd4lbj3fr2hsndc/Nopita-MD.zip/file" class="btn">12. Nopita-MD</a>
+          <a href="https://www.mediafire.com/file/48scw3t1efd7nr0/Novi-NoScan-2024.zip/file" class="btn">13. Novi-MD</a>
+          <a href="https://www.mediafire.com/file/ed0rv6rhsii1qqd/scriptbaru2024.zip/file" class="btn">14. Novi Multi Pairing</a>
+          <a href="https://www.mediafire.com/file/jtcaaevkxakbm9y/GOJO-MD.zip/file" class="btn">15. Novi-Multi</a>
+          <a href="https://www.mediafire.com/file/xitzxzcf2mizbxd/%25E1%25B4%25A0%25C9%25AA%25E1%25B4%259B%25E1%25B4%2580_-_%25E1%25B4%258D%25E1%25B4%259C%25CA%259F%25E1%25B4%259B%25C9%25AA_-_%25F0%259D%259F%25B8%25F0%259D%259F%25B6%25F0%259D%259F%25B8%25F0%259D%259F%25BB.zip/file" class="btn">16. SC Support Termux</a>
+          <a href="https://www.mediafire.com/file/7810ka7i4zh69o8/elaina%2526vita.zip/file" class="btn">17. Jaga GB</a>
+          <a href="https://www.mediafire.com/file/0e4l03yj4pk3m83/Navia-md.zip/file" class="btn">18. Jaga GB V2</a>
+          <a href="https://www.mediafire.com/file/e84yn3sg21tvyeh/Alya-Chuantek.zip/file" class="btn">19. Alya-Update</a>
+          <a href="https://www.mediafire.com/file/9nczf294mpxax67/Terakomari+MD.zip/file" class="btn">20. Terakomari-MD</a>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="slide" id="slide3">
+        <a href="https://chat.whatsapp.com/JO8Sd1OnpgqCEVCL7J4Krf?mode=ems_copy_c" target="_blank" class="group-btn">Gabung Grup Info SS/Panel</a>
+        <div class="bot-grid">
+          <a href="https://www.mediafire.com/file/dummy21" class="btn">21. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy22" class="btn">22. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy23" class="btn">23. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy24" class="btn">24. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy25" class="btn">25. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy26" class="btn">26. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy27" class="btn">27. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy28" class="btn">28. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy29" class="btn">29. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy30" class="btn">30. Tunggu Update</a>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div class="slide" id="slide4">
+        <a href="https://chat.whatsapp.com/JO8Sd1OnpgqCEVCL7J4Krf?mode=ems_copy_c" target="_blank" class="group-btn">Gabung Grup Info SS/Panel</a>
+        <div class="bot-grid">
+          <a href="https://www.mediafire.com/file/dummy31" class="btn">31. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy32" class="btn">32. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy33" class="btn">33. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy34" class="btn">34. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy35" class="btn">35. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy36" class="btn">36. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy37" class="btn">37. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy38" class="btn">38. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy39" class="btn">39. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy40" class="btn">40. Tunggu Update</a>
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="slide" id="slide5">
+        <a href="https://chat.whatsapp.com/JO8Sd1OnpgqCEVCL7J4Krf?mode=ems_copy_c" target="_blank" class="group-btn">Gabung Grup Info SS/Panel</a>
+        <div class="bot-grid">
+          <a href="https://www.mediafire.com/file/dummy41" class="btn">41. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy42" class="btn">42. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy43" class="btn">43. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy44" class="btn">44. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy45" class="btn">45. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy46" class="btn">46. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy47" class="btn">47. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy48" class="btn">48. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy49" class="btn">49. Tunggu Update</a>
+          <a href="https://www.mediafire.com/file/dummy50" class="btn">50. Tunggu Update</a>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="nav-buttons">
+        <button class="nav-btn" onclick="prevSlide()">← Previous</button>
+        <div class="page-indicator">
+          <span class="dot active" data-slide="1"></span>
+          <span class="dot" data-slide="2"></span>
+          <span class="dot" data-slide="3"></span>
+          <span class="dot" data-slide="4"></span>
+          <span class="dot" data-slide="5"></span>
+        </div>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="footer-text">Powered by modern web technology</p>
+      <p class="developer">Recode by XOBE Development</p>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 5;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.remove('active');
+        if (i === n - 1) s.classList.add('active');
+      });
+
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        dot.classList.remove('active');
+        if (i === n - 1) dot.classList.add('active');
+      });
+    }
+
+    function nextSlide() {
+      currentSlide++;
+      if (currentSlide > totalSlides) currentSlide = 1;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide--;
+      if (currentSlide < 1) currentSlide = totalSlides;
+      showSlide(currentSlide);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+
+    // Dot click navigation
+    document.querySelectorAll('.dot').forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        currentSlide = index + 1;
+        showSlide(currentSlide);
+      });
+    });
+  </script>
+</body>
+</html>
